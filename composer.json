@@ -14,7 +14,7 @@
     ],
     "autoload": {
         "psr-0": {
-            "HTMLValidator": "src/"
+            "CSSValidator": "src/"
         }
     }
 }
