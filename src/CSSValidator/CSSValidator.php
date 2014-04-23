@@ -173,13 +173,12 @@ class CSSValidator
 
         $context = stream_context_create(array(
             'http' => array(
-                'method' => 'POST',
-                'header' => "Content-Type: application/x-www-form-urlencoded\r\nUser-Agent: CSSValidator",
-                'content' => $query,
+                'method' => 'GET',
+                'header' => 'User-Agent: CSSValidator',
             )
         ));
 
-        $data = $this->sendRequest($this->validatorUri, $context);
+        $data = $this->sendRequest($this->validatorUri . '?' . $query, $context);
 
         return $this->parseSOAP12Response($data);
     }
