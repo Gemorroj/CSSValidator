@@ -8,8 +8,7 @@
     },
     "authors": [
         {
-            "name": "Gemorroj",
-            "role": "Developer"
+            "name": "Gemorroj"
         }
     ],
     "require-dev": {
@@ -17,7 +16,12 @@
     },
     "autoload": {
         "psr-4": {
-            "CSSValidator\\": "src/CSSValidator"
+            "CSSValidator\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CSSValidator\\Tests\\": "tests/"
         }
     }
 }
