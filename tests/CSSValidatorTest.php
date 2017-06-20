@@ -1,5 +1,5 @@
 <?php
-namespace Tests\CSSValidator;
+namespace CSSValidator\Tests;
 
 use CSSValidator\CSSValidator;
 
