@@ -7,18 +7,6 @@
 - PHP >= 5.6
 
 ### Installation:
-
-- Add to composer.json:
-
-```json
-{
-    "require": {
-        "gemorroj/cssvalidator": "dev-master"
-    }
-}
-```
-- Install project:
-
 ```bash
-$ php composer.phar update gemorroj/cssvalidator
+composer require gemorroj/cssvalidator
 ```
