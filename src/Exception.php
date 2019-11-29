@@ -4,5 +4,4 @@ namespace CSSValidator;
 
 class Exception extends \Exception
 {
-    
 }

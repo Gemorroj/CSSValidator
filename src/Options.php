@@ -184,12 +184,12 @@ class Options
      */
     public function buildOptions()
     {
-        return array(
+        return [
             'output' => $this->getOutput(),
             'profile' => $this->getProfile(),
             'warning' => $this->getWarning(),
             'usermedium' => $this->getUsermedium(),
             'lang' => $this->getLang(),
-        );
+        ];
     }
 }

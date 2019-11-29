@@ -70,12 +70,12 @@ class CSSValidator
     /**
      * @param string $uri
      * @param resource $context
-     * @return string
      * @throws Exception
+     * @return string
      */
     protected function sendRequest($uri, $context = null)
     {
-        $data = file_get_contents($uri, null, $context);
+        $data = \file_get_contents($uri, null, $context);
         if ($data === false) {
             throw new Exception('Error send request');
         }
@@ -91,23 +91,23 @@ class CSSValidator
      *
      * @param string $uri The address to the page to validate ex: http://example.com/
      *
+     * @throws Exception
      * @return Response object Response if web service call successfull
      *
-     * @throws Exception
      */
     public function validateUri($uri)
     {
-        $query = http_build_query(array_merge(
+        $query = \http_build_query(\array_merge(
             $this->getOptions()->buildOptions(),
-            array('uri' => $uri)
+            ['uri' => $uri]
         ));
 
-        $context = stream_context_create(array(
-            'http' => array(
+        $context = \stream_context_create([
+            'http' => [
                 'method' => 'GET',
                 'header' => 'User-Agent: CSSValidator',
-            )
-        ));
+            ]
+        ]);
 
         $data = $this->sendRequest($this->validatorUri . '?' . $query, $context);
 
@@ -122,20 +122,20 @@ class CSSValidator
      *
      * @param string $file file to be validated.
      *
+     * @throws Exception
      * @return Response object Response if web service call successfull
      *
-     * @throws Exception
      */
     public function validateFile($file)
     {
-        if (file_exists($file) !== true) {
+        if (\file_exists($file) !== true) {
             throw new Exception('File not found');
         }
-        if (is_readable($file) !== true) {
+        if (\is_readable($file) !== true) {
             throw new Exception('File not readable');
         }
 
-        $data = file_get_contents($file);
+        $data = \file_get_contents($file);
         if ($data === false) {
             throw new Exception('Failed get file');
         }
@@ -148,23 +148,23 @@ class CSSValidator
      *
      * @param string $css Full css document fragment
      *
+     * @throws Exception
      * @return Response object Response if web service call successfull
      *
-     * @throws Exception
      */
     public function validateFragment($css)
     {
-        $query = http_build_query(array_merge(
+        $query = \http_build_query(\array_merge(
             $this->getOptions()->buildOptions(),
-            array('text' => $css)
+            ['text' => $css]
         ));
 
-        $context = stream_context_create(array(
-            'http' => array(
+        $context = \stream_context_create([
+            'http' => [
                 'method' => 'GET',
                 'header' => 'User-Agent: CSSValidator',
-            )
-        ));
+            ]
+        ]);
 
         $data = $this->sendRequest($this->validatorUri . '?' . $query, $context);
 
@@ -179,9 +179,9 @@ class CSSValidator
      *
      * @param string $xml The raw soap12 XML response from the validator.
      *
+     * @throws Exception
      * @return Response object Response if parsing soap12 response successfully,
      *
-     * @throws Exception
      */
     protected function parseSOAP12Response($xml)
     {
@@ -194,10 +194,10 @@ class CSSValidator
         $response = new Response();
 
         // Get the standard CDATA elements
-        foreach (array('uri', 'checkedby', 'csslevel', 'date') as $var) {
+        foreach (['uri', 'checkedby', 'csslevel', 'date'] as $var) {
             $element = $doc->getElementsByTagName($var);
             if ($element->length) {
-                $response->{'set' . ucfirst($var)}($element->item(0)->nodeValue);
+                $response->{'set' . \ucfirst($var)}($element->item(0)->nodeValue);
             }
         }
 

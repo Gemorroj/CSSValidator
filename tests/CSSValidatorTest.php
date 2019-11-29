@@ -1,11 +1,11 @@
 <?php
 namespace CSSValidator\Tests;
 
-use CSSValidator\CSSValidator;
+use PHPUnit\Framework\TestCase;
 
-class CSSValidatorTest extends \PHPUnit_Framework_TestCase
+class CSSValidatorTest extends TestCase
 {
-    public function testFake()
+    public function testFake(): void
     {
         self::markTestSkipped('Not implemented yet');
     }

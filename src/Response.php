@@ -46,14 +46,14 @@ class Response
      *
      * @var Error[]
      */
-    public $errors = array();
+    public $errors = [];
 
     /**
      * Array of Warning objects (if applicable)
      *
      * @var Error[]
      */
-    public $warnings = array();
+    public $warnings = [];
 
     /**
      * @return string

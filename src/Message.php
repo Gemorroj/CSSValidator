@@ -97,10 +97,10 @@ abstract class Message
     public function __construct(\DOMElement $node = null)
     {
         if ($node) {
-            foreach (get_class_vars(__CLASS__) as $var => $val) {
+            foreach (\get_class_vars(__CLASS__) as $var => $val) {
                 $element = $node->getElementsByTagName($var);
                 if ($element->length) {
-                    $this->{'set' . ucfirst($var)}($element->item(0)->nodeValue);
+                    $this->{'set' . \ucfirst($var)}($element->item(0)->nodeValue);
                 }
             }
         }
