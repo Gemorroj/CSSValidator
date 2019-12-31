@@ -179,10 +179,7 @@ class Options
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function buildOptions()
+    public function buildOptions(): array
     {
         return [
             'output' => $this->getOutput(),
