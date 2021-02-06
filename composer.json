@@ -4,7 +4,7 @@
     "description": "W3C CSS Validator service.",
     "license": "LGPL-3.0",
     "require": {
-        "php": "^7.3|^8.0",
+        "php": ">=7.3",
         "ext-dom": "*"
     },
     "authors": [
@@ -13,8 +13,8 @@
         }
     ],
     "require-dev": {
-        "phpunit/phpunit": "^9.0",
-        "friendsofphp/php-cs-fixer": "^2.16"
+        "phpunit/phpunit": "^9.5",
+        "friendsofphp/php-cs-fixer": "^2.18"
     },
     "autoload": {
         "psr-4": {

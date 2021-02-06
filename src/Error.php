@@ -7,21 +7,21 @@ class Error extends Message
     /**
      * Category of error raised.
      *
-     * @var    string
+     * @var string
      */
     protected $errortype;
 
     /**
      * Context where error was occured.
      *
-     * @var    string
+     * @var string
      */
     protected $context;
 
     /**
      * CSS property where error is raised.
      *
-     * @var    string
+     * @var string
      */
     protected $property;
 
@@ -38,7 +38,7 @@ class Error extends Message
      *
      * @return Error
      */
-    public function setContext($context)
+    public function setContext($context): self
     {
         $this->context = $context;
 
@@ -58,7 +58,7 @@ class Error extends Message
      *
      * @return Error
      */
-    public function setErrortype($errortype)
+    public function setErrortype($errortype): self
     {
         $this->errortype = $errortype;
 
@@ -78,7 +78,7 @@ class Error extends Message
      *
      * @return Error
      */
-    public function setProperty($property)
+    public function setProperty($property): self
     {
         $this->property = $property;
 

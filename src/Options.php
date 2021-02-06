@@ -22,7 +22,7 @@ class Options
      *             <li>1</li> normal report
      *             <li>0</li> most important warning messages
      *             <li>no</li> none messages
-     *           </ul>
+     *           </ul>.
      *
      * @var string
      */
@@ -43,7 +43,7 @@ class Options
      *             <li>mobile</li> Mobile
      *             <li>atsc-tv</li> ATSC TV
      *             <li>tv</li> TV
-     *           </ul>
+     *           </ul>.
      *
      * @var string
      */
@@ -64,7 +64,7 @@ class Options
      *                <li>tty</li>
      *                <li>tv</li>
      *                <li>presentation</li>
-     *              </ul>
+     *              </ul>.
      *
      * @var string
      */
@@ -73,7 +73,7 @@ class Options
     /**
      * Language used for response messages
      *        Default value is 'en', and value could one of these :
-     *        en, fr, ja, es, zh-cn, nl, de
+     *        en, fr, ja, es, zh-cn, nl, de.
      *
      * @var string
      */
@@ -92,7 +92,7 @@ class Options
      *
      * @return Options
      */
-    public function setLang($lang)
+    public function setLang($lang): self
     {
         $this->lang = $lang;
 
@@ -112,7 +112,7 @@ class Options
      *
      * @return Options
      */
-    public function setOutput($output)
+    public function setOutput($output): self
     {
         $this->output = $output;
 
@@ -132,7 +132,7 @@ class Options
      *
      * @return Options
      */
-    public function setProfile($profile)
+    public function setProfile($profile): self
     {
         $this->profile = $profile;
 
@@ -152,7 +152,7 @@ class Options
      *
      * @return Options
      */
-    public function setUsermedium($usermedium)
+    public function setUsermedium($usermedium): self
     {
         $this->usermedium = $usermedium;
 
@@ -172,7 +172,7 @@ class Options
      *
      * @return Options
      */
-    public function setWarning($warning)
+    public function setWarning($warning): self
     {
         $this->warning = $warning;
 

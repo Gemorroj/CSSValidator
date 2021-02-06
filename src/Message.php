@@ -5,26 +5,26 @@ namespace CSSValidator;
 abstract class Message
 {
     /**
-     * The address of the document trying to validate
+     * The address of the document trying to validate.
      *
-     * @var    string
+     * @var string
      */
     protected $uri;
 
     /**
-     * Line corresponding to the message
+     * Line corresponding to the message.
      *
      * Within the source code of the validated document, refers to the line
      * where the error was detected.
      *
-     * @var    int
+     * @var int
      */
     protected $line;
 
     /**
-     * The actual message
+     * The actual message.
      *
-     * @var    string
+     * @var string
      */
     protected $message;
 
@@ -41,7 +41,7 @@ abstract class Message
      *
      * @return Message
      */
-    public function setLine($line)
+    public function setLine($line): self
     {
         $this->line = $line;
 
@@ -61,7 +61,7 @@ abstract class Message
      *
      * @return Message
      */
-    public function setMessage($message)
+    public function setMessage($message): self
     {
         $this->message = $message;
 
@@ -81,18 +81,17 @@ abstract class Message
      *
      * @return Message
      */
-    public function setUri($uri)
+    public function setUri($uri): self
     {
         $this->uri = $uri;
 
         return $this;
     }
 
-
     /**
-     * Constructor for a response message
+     * Constructor for a response message.
      *
-     * @param \DOMElement $node A dom document node.
+     * @param \DOMElement $node a dom document node
      */
     public function __construct(\DOMElement $node = null)
     {
@@ -100,7 +99,7 @@ abstract class Message
             foreach (\get_class_vars(__CLASS__) as $var => $val) {
                 $element = $node->getElementsByTagName($var);
                 if ($element->length) {
-                    $this->{'set' . \ucfirst($var)}($element->item(0)->nodeValue);
+                    $this->{'set'.\ucfirst($var)}($element->item(0)->nodeValue);
                 }
             }
         }

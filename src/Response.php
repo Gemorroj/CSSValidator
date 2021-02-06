@@ -8,7 +8,7 @@ class Response
      * The address of the document validated. In EARL terms, this is
      * the TestSubject.
      *
-     * @var    string
+     * @var string
      */
     public $uri;
 
@@ -16,40 +16,40 @@ class Response
      * Location of the service which provided the validation result. In EARL terms,
      * this is the Assertor.
      *
-     * @var    string
+     * @var string
      */
     public $checkedby;
 
     /**
      * The CSS level (or profile) in use during the validation.
      *
-     * @var    string
+     * @var string
      */
     public $csslevel;
 
     /**
      * The actual date of the validation.
      *
-     * @var    string
+     * @var string
      */
     public $date;
 
     /**
-     * Whether or not the document validated passed or not formal validation
+     * Whether or not the document validated passed or not formal validation.
      *
-     * @var    bool
+     * @var bool
      */
-    public $validity;
+    public $validity = false;
 
     /**
-     * Array of Error objects (if applicable)
+     * Array of Error objects (if applicable).
      *
      * @var Error[]
      */
     public $errors = [];
 
     /**
-     * Array of Warning objects (if applicable)
+     * Array of Warning objects (if applicable).
      *
      * @var Error[]
      */
@@ -68,7 +68,7 @@ class Response
      *
      * @return Response
      */
-    public function setCheckedby($checkedby)
+    public function setCheckedby($checkedby): self
     {
         $this->checkedby = $checkedby;
 
@@ -88,7 +88,7 @@ class Response
      *
      * @return Response
      */
-    public function setCsslevel($csslevel)
+    public function setCsslevel($csslevel): self
     {
         $this->csslevel = $csslevel;
 
@@ -108,7 +108,7 @@ class Response
      *
      * @return Response
      */
-    public function setDate($date)
+    public function setDate($date): self
     {
         $this->date = $date;
 
@@ -118,7 +118,7 @@ class Response
     /**
      * @return Error[]
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->errors;
     }
@@ -128,7 +128,7 @@ class Response
      *
      * @return Response
      */
-    public function setErrors(array $errors)
+    public function setErrors(array $errors): self
     {
         $this->errors = $errors;
 
@@ -148,7 +148,7 @@ class Response
      *
      * @return Response
      */
-    public function setUri($uri)
+    public function setUri($uri): self
     {
         $this->uri = $uri;
 
@@ -156,7 +156,7 @@ class Response
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isValidity()
     {
@@ -164,11 +164,11 @@ class Response
     }
 
     /**
-     * @param boolean $validity
+     * @param bool $validity
      *
      * @return Response
      */
-    public function setValidity($validity)
+    public function setValidity($validity): self
     {
         $this->validity = $validity;
 
@@ -178,7 +178,7 @@ class Response
     /**
      * @return Error[]
      */
-    public function getWarnings()
+    public function getWarnings(): array
     {
         return $this->warnings;
     }
@@ -188,20 +188,17 @@ class Response
      *
      * @return Response
      */
-    public function setWarnings(array $warnings)
+    public function setWarnings(array $warnings): self
     {
         $this->warnings = $warnings;
 
         return $this;
     }
 
-
     /**
-     * @param Error $error
-     *
      * @return Response
      */
-    public function addError(Error $error)
+    public function addError(Error $error): self
     {
         $this->errors[] = $error;
 
@@ -209,11 +206,9 @@ class Response
     }
 
     /**
-     * @param Warning $warning
-     *
      * @return Response
      */
-    public function addWarning(Warning $warning)
+    public function addWarning(Warning $warning): self
     {
         $this->warnings[] = $warning;
 
