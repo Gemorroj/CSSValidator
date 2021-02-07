@@ -23,6 +23,9 @@ $result = $validator->validateFile('/path/to/file.css');
 $result = $validator->validateUri('http://example.com/style.css');
 $result = $validator->validateUri('http://example.com'); // extract and validate all CSS files on that page
 
+echo $result->getCssLevel();
+var_dump($result->isValid());
+
 print_r($result->getErrors());
 print_r($result->getWarnings());
 ```

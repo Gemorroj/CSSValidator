@@ -9,7 +9,7 @@ class Response
      *
      * @var string
      */
-    public $cssLevel = 'css3';
+    public $cssLevel = Options::PROFILE_CSS3;
 
     /**
      * Whether or not the document validated passed or not formal validation.

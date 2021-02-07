@@ -4,6 +4,18 @@ namespace CSSValidator;
 
 class Options
 {
+    public const PROFILE_NONE = 'none';
+    public const PROFILE_CSS1 = 'css1';
+    public const PROFILE_CSS2 = 'css2';
+    public const PROFILE_CSS21 = 'css21';
+    public const PROFILE_CSS3 = 'css3';
+    public const PROFILE_SVG = 'svg';
+    public const PROFILE_SVG_BASIC = 'svgbasic';
+    public const PROFILE_SVG_TINY = 'svgtiny';
+    public const PROFILE_MOBILE = 'mobile';
+    public const PROFILE_ATSC_TV = 'atsc-tv';
+    public const PROFILE_TV = 'tv';
+
     /**
      * Warning level
      *           Default value is '1', and value could one of these :
@@ -20,7 +32,7 @@ class Options
 
     /**
      * Profile
-     *           Default value is 'css21', and value could one of these :
+     *           Default value is 'css3', and value could one of these :
      *           <ul>
      *             <li>none</li> none profile
      *             <li>css1</li> CSS level 1
@@ -37,7 +49,7 @@ class Options
      *
      * @var string
      */
-    private $profile = 'css3';
+    private $profile = self::PROFILE_CSS3;
 
     /**
      * User medium

@@ -3,6 +3,7 @@
 namespace CSSValidator\Tests;
 
 use CSSValidator\CSSValidator;
+use CSSValidator\Options;
 use PHPUnit\Framework\TestCase;
 
 class CSSValidatorTest extends TestCase
@@ -13,6 +14,8 @@ class CSSValidatorTest extends TestCase
         $result = $validator->validateUri('http://jigsaw.w3.org/css-validator/style/base.css');
         self::assertEmpty($result->getErrors());
         self::assertNotEmpty($result->getWarnings());
+        self::assertTrue($result->isValid());
+        self::assertSame(Options::PROFILE_CSS3, $result->getCssLevel());
     }
 
     public function testHtmlUri(): void
@@ -21,6 +24,8 @@ class CSSValidatorTest extends TestCase
         $result = $validator->validateUri('http://example.com');
         self::assertEmpty($result->getErrors());
         self::assertNotEmpty($result->getWarnings());
+        self::assertTrue($result->isValid());
+        self::assertSame(Options::PROFILE_CSS3, $result->getCssLevel());
     }
 
     public function testValidCSSFile(): void
@@ -29,6 +34,8 @@ class CSSValidatorTest extends TestCase
         $result = $validator->validateFile(__DIR__.'/fixtures/valid.css');
         self::assertEmpty($result->getErrors());
         self::assertEmpty($result->getWarnings());
+        self::assertTrue($result->isValid());
+        self::assertSame(Options::PROFILE_CSS3, $result->getCssLevel());
     }
 
     public function testValidCSSFragment(): void
@@ -38,6 +45,8 @@ class CSSValidatorTest extends TestCase
         $result = $validator->validateFragment($css);
         self::assertEmpty($result->getErrors());
         self::assertEmpty($result->getWarnings());
+        self::assertTrue($result->isValid());
+        self::assertSame(Options::PROFILE_CSS3, $result->getCssLevel());
     }
 
     public function testErrorCSSFragment(): void
@@ -45,6 +54,10 @@ class CSSValidatorTest extends TestCase
         $css = '#error-css-test!!!ing { bac#%^&kground: green; }';
         $validator = new CSSValidator();
         $result = $validator->validateFragment($css);
+
+        self::assertFalse($result->isValid());
+        self::assertSame(Options::PROFILE_CSS3, $result->getCssLevel());
+
         self::assertEmpty($result->getWarnings());
         self::assertCount(2, $result->getErrors());
 
@@ -76,6 +89,10 @@ class CSSValidatorTest extends TestCase
         $css = '#warning-css-test { color: rgb(256, 1, 1); }';
         $validator = new CSSValidator();
         $result = $validator->validateFragment($css);
+
+        self::assertTrue($result->isValid());
+        self::assertSame(Options::PROFILE_CSS3, $result->getCssLevel());
+
         self::assertEmpty($result->getErrors());
         self::assertCount(1, $result->getWarnings());
 
