@@ -2,10 +2,19 @@
 
 namespace CSSValidator;
 
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 class CSSValidator
 {
     /**
      * URI to the W3C validator.
+     *
+     * @see https://github.com/w3c/css-validator
      *
      * @var string
      */
@@ -19,17 +28,21 @@ class CSSValidator
     private $options;
 
     /**
-     * Default context for http request.
-     *
-     * @see https://www.php.net/manual/en/context.php
-     *
-     * @var array
+     * @var HttpClientInterface
      */
-    private $context = [];
+    private $httpClient;
 
-    public function __construct(Options $options = null)
+    public function __construct(Options $options = null, HttpClientInterface $httpClient = null)
     {
         $this->setOptions($options ?: new Options());
+        if (!$httpClient) {
+            $httpClient = HttpClient::createForBaseUri($this->getValidatorUri(), [
+                'headers' => [
+                    'User-Agent' => 'gemorroj/cssvalidator',
+                ],
+            ]);
+        }
+        $this->setHttpClient($httpClient);
     }
 
     public function getOptions(): Options
@@ -56,37 +69,16 @@ class CSSValidator
         return $this;
     }
 
-    public function getContext(): array
+    public function getHttpClient(): HttpClientInterface
     {
-        return $this->context;
+        return $this->httpClient;
     }
 
-    public function setContext(array $context): self
+    public function setHttpClient(HttpClientInterface $httpClient): self
     {
-        $this->context = $context;
+        $this->httpClient = $httpClient;
 
         return $this;
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected function sendRequest(string $uri, array $context): string
-    {
-        $context = \array_merge($this->getContext(), $context);
-
-        if (isset($context['http']['header'])) {
-            $context['http']['header'] .= "\r\nUser-Agent: gemorroj/cssvalidator";
-        } else {
-            $context['http']['header'] = 'User-Agent: gemorroj/cssvalidator';
-        }
-
-        $data = @\file_get_contents($uri, false, \stream_context_create($context));
-        if (false === $data) {
-            throw new Exception(\error_get_last()['message']);
-        }
-
-        return $data;
     }
 
     /**
@@ -98,25 +90,21 @@ class CSSValidator
      * @param string $uri The address to the page to validate ex: http://example.com/
      *
      * @throws Exception
-     *
-     * @return Response object Response if web service call successful
+     * @throws TransportExceptionInterface   When a network error occurs
+     * @throws RedirectionExceptionInterface On a 3xx when $throw is true and the "max_redirects" option has been reached
+     * @throws ClientExceptionInterface      On a 4xx when $throw is true
+     * @throws ServerExceptionInterface      On a 5xx when $throw is true
      */
     public function validateUri(string $uri): Response
     {
-        $query = \http_build_query(\array_merge(
-            $this->getOptions()->buildOptions(),
-            ['uri' => $uri, 'output' => 'soap12']
-        ));
+        $response = $this->getHttpClient()->request('GET', '', [
+            'query' => \array_merge(
+                $this->getOptions()->buildOptions(),
+                ['uri' => $uri, 'output' => 'soap12']
+            ),
+        ]);
 
-        $context = [
-            'http' => [
-                'method' => 'GET',
-            ],
-        ];
-
-        $data = $this->sendRequest($this->validatorUri.'?'.$query, $context);
-
-        return $this->parseSOAP12Response($data);
+        return $this->parseSOAP12Response($response->getContent());
     }
 
     /**
@@ -128,15 +116,17 @@ class CSSValidator
      * @param string $file file to be validated
      *
      * @throws Exception
-     *
-     * @return Response object Response if web service call successful
+     * @throws TransportExceptionInterface   When a network error occurs
+     * @throws RedirectionExceptionInterface On a 3xx when $throw is true and the "max_redirects" option has been reached
+     * @throws ClientExceptionInterface      On a 4xx when $throw is true
+     * @throws ServerExceptionInterface      On a 5xx when $throw is true
      */
     public function validateFile(string $file): Response
     {
-        if (true !== \file_exists($file)) {
+        if (!\file_exists($file)) {
             throw new Exception('File not found');
         }
-        if (true !== \is_readable($file)) {
+        if (!\is_readable($file)) {
             throw new Exception('File not readable');
         }
 
@@ -154,25 +144,22 @@ class CSSValidator
      * @param string $css Full css document fragment
      *
      * @throws Exception
-     *
-     * @return Response object Response if web service call successful
+     * @throws TransportExceptionInterface   When a network error occurs
+     * @throws RedirectionExceptionInterface On a 3xx when $throw is true and the "max_redirects" option has been reached
+     * @throws ClientExceptionInterface      On a 4xx when $throw is true
+     * @throws ServerExceptionInterface      On a 5xx when $throw is true
      */
     public function validateFragment(string $css): Response
     {
-        $query = \http_build_query(\array_merge(
-            $this->getOptions()->buildOptions(),
-            ['text' => $css, 'output' => 'soap12']
-        ));
+        $response = $this->getHttpClient()->request('GET', '', [
+            'body' => $css,
+            'query' => \array_merge(
+                $this->getOptions()->buildOptions(),
+                ['text' => $css, 'output' => 'soap12']
+            ),
+        ]);
 
-        $context = [
-            'http' => [
-                'method' => 'GET',
-            ],
-        ];
-
-        $data = $this->sendRequest($this->validatorUri.'?'.$query, $context);
-
-        return $this->parseSOAP12Response($data);
+        return $this->parseSOAP12Response($response->getContent());
     }
 
     /**
@@ -183,8 +170,6 @@ class CSSValidator
      * @param string $xml the raw soap12 XML response from the validator
      *
      * @throws Exception
-     *
-     * @return Response object Response if parsing soap12 response successfully,
      */
     protected function parseSOAP12Response(string $xml): Response
     {

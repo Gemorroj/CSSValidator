@@ -6,7 +6,8 @@
     "require": {
         "php": ">=7.3",
         "ext-dom": "*",
-        "ext-libxml": "*"
+        "ext-libxml": "*",
+        "symfony/http-client": "^4.4.11|^5.0"
     },
     "authors": [
         {
