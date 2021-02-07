@@ -9,78 +9,95 @@ class Error extends Message
      *
      * @var string
      */
-    protected $errortype;
+    private $errorType;
 
     /**
-     * Context where error was occured.
+     * Context where error was occurred.
      *
-     * @var string
+     * @var string|null
      */
-    protected $context;
+    private $context;
 
     /**
-     * CSS property where error is raised.
-     *
-     * @var string
+     * @var string|null
      */
-    protected $property;
+    private $errorSubType;
 
     /**
-     * @return string
+     * @var string|null
      */
-    public function getContext()
+    private $skippedString;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct(\DOMElement $node)
+    {
+        parent::__construct($node);
+
+        $errorTypeElement = $node->getElementsByTagName('errortype');
+        $this->setErrorType($errorTypeElement->item(0)->nodeValue);
+
+        $contextElement = $node->getElementsByTagName('context');
+        if ($contextElement->length) {
+            $this->setContext($contextElement->item(0)->nodeValue);
+        }
+
+        $errorSubTypeElement = $node->getElementsByTagName('errorsubtype');
+        if ($errorSubTypeElement->length) {
+            $this->setErrorSubType(\trim($errorSubTypeElement->item(0)->nodeValue));
+        }
+
+        $skippedStringElement = $node->getElementsByTagName('skippedstring');
+        if ($skippedStringElement->length) {
+            $this->setSkippedString(\trim($skippedStringElement->item(0)->nodeValue));
+        }
+    }
+
+    public function getSkippedString(): ?string
+    {
+        return $this->skippedString;
+    }
+
+    public function setSkippedString(?string $skippedString): self
+    {
+        $this->skippedString = $skippedString;
+
+        return $this;
+    }
+
+    public function getErrorSubType(): ?string
+    {
+        return $this->errorSubType;
+    }
+
+    public function setErrorSubType(?string $errorSubType): self
+    {
+        $this->errorSubType = $errorSubType;
+
+        return $this;
+    }
+
+    public function getErrorType(): string
+    {
+        return $this->errorType;
+    }
+
+    public function setErrorType(string $errorType): self
+    {
+        $this->errorType = $errorType;
+
+        return $this;
+    }
+
+    public function getContext(): ?string
     {
         return $this->context;
     }
 
-    /**
-     * @param string $context
-     *
-     * @return Error
-     */
-    public function setContext($context): self
+    public function setContext(?string $context): self
     {
         $this->context = $context;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getErrortype()
-    {
-        return $this->errortype;
-    }
-
-    /**
-     * @param string $errortype
-     *
-     * @return Error
-     */
-    public function setErrortype($errortype): self
-    {
-        $this->errortype = $errortype;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getProperty()
-    {
-        return $this->property;
-    }
-
-    /**
-     * @param string $property
-     *
-     * @return Error
-     */
-    public function setProperty($property): self
-    {
-        $this->property = $property;
 
         return $this;
     }

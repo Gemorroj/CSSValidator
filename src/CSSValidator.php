@@ -9,14 +9,23 @@ class CSSValidator
      *
      * @var string
      */
-    protected $validatorUri = 'http://jigsaw.w3.org/css-validator/validator';
+    private $validatorUri = 'http://jigsaw.w3.org/css-validator/validator';
 
     /**
      * Options.
      *
      * @var Options
      */
-    protected $options;
+    private $options;
+
+    /**
+     * Default context for http request.
+     *
+     * @see https://www.php.net/manual/en/context.php
+     *
+     * @var array
+     */
+    private $context = [];
 
     public function __construct(Options $options = null)
     {
@@ -47,16 +56,34 @@ class CSSValidator
         return $this;
     }
 
+    public function getContext(): array
+    {
+        return $this->context;
+    }
+
+    public function setContext(array $context): self
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
     /**
-     * @param resource $context
-     *
      * @throws Exception
      */
-    protected function sendRequest(string $uri, $context = null): string
+    protected function sendRequest(string $uri, array $context): string
     {
-        $data = \file_get_contents($uri, null, $context);
+        $context = \array_merge($this->getContext(), $context);
+
+        if (isset($context['http']['header'])) {
+            $context['http']['header'] .= "\r\nUser-Agent: gemorroj/cssvalidator";
+        } else {
+            $context['http']['header'] = 'User-Agent: gemorroj/cssvalidator';
+        }
+
+        $data = @\file_get_contents($uri, false, \stream_context_create($context));
         if (false === $data) {
-            throw new Exception('Error send request');
+            throw new Exception(\error_get_last()['message']);
         }
 
         return $data;
@@ -78,15 +105,14 @@ class CSSValidator
     {
         $query = \http_build_query(\array_merge(
             $this->getOptions()->buildOptions(),
-            ['uri' => $uri]
+            ['uri' => $uri, 'output' => 'soap12']
         ));
 
-        $context = \stream_context_create([
+        $context = [
             'http' => [
                 'method' => 'GET',
-                'header' => 'User-Agent: CSSValidator',
             ],
-        ]);
+        ];
 
         $data = $this->sendRequest($this->validatorUri.'?'.$query, $context);
 
@@ -114,9 +140,9 @@ class CSSValidator
             throw new Exception('File not readable');
         }
 
-        $data = \file_get_contents($file);
+        $data = @\file_get_contents($file);
         if (false === $data) {
-            throw new Exception('Failed get file');
+            throw new Exception(\error_get_last()['message']);
         }
 
         return $this->validateFragment($data);
@@ -135,15 +161,14 @@ class CSSValidator
     {
         $query = \http_build_query(\array_merge(
             $this->getOptions()->buildOptions(),
-            ['text' => $css]
+            ['text' => $css, 'output' => 'soap12']
         ));
 
-        $context = \stream_context_create([
+        $context = [
             'http' => [
                 'method' => 'GET',
-                'header' => 'User-Agent: CSSValidator',
             ],
-        ]);
+        ];
 
         $data = $this->sendRequest($this->validatorUri.'?'.$query, $context);
 
@@ -165,34 +190,23 @@ class CSSValidator
     {
         $doc = new \DOMDocument('1.0', 'UTF-8');
 
-        if (false === $doc->loadXML($xml)) {
+        if (false === @$doc->loadXML($xml, \LIBXML_COMPACT | \LIBXML_NONET)) {
             throw new Exception('Failed load xml');
         }
 
         $response = new Response();
 
-        // Get the standard CDATA elements
-        foreach (['uri', 'checkedby', 'csslevel', 'date'] as $var) {
-            $element = $doc->getElementsByTagName($var);
-            if ($element->length) {
-                $response->{'set'.\ucfirst($var)}($element->item(0)->nodeValue);
-            }
-        }
+        $cssLevelElement = $doc->getElementsByTagName('csslevel');
+        $response->setCssLevel($cssLevelElement->item(0)->nodeValue);
 
-        // Handle the bool element validity
         $element = $doc->getElementsByTagName('validity');
-        if ($element->length && 'true' === $element->item(0)->nodeValue) {
-            $response->setValidity(true);
-        } else {
-            $response->setValidity(false);
+        $response->setValid('true' === $element->item(0)->nodeValue);
+
+        $errors = $doc->getElementsByTagName('error');
+        foreach ($errors as $error) {
+            $response->addError(new Error($error));
         }
 
-        if (!$response->isValidity()) {
-            $errors = $doc->getElementsByTagName('error');
-            foreach ($errors as $error) {
-                $response->addError(new Error($error));
-            }
-        }
         $warnings = $doc->getElementsByTagName('warning');
         foreach ($warnings as $warning) {
             $response->addWarning(new Warning($warning));

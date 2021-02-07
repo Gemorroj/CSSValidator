@@ -10,3 +10,19 @@
 ```bash
 composer require gemorroj/cssvalidator
 ```
+
+### Example:
+
+```php
+<?php
+use CSSValidator\CSSValidator;
+
+$validator = new CSSValidator();
+$result = $validator->validateFragment('#css-code { background: green; }');
+$result = $validator->validateFile('/path/to/file.css');
+$result = $validator->validateUri('http://example.com/style.css');
+$result = $validator->validateUri('http://example.com'); // will extract and validate all css files on that page
+
+print_r($result->getErrors());
+print_r($result->getWarnings());
+```

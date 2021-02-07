@@ -5,41 +5,18 @@ namespace CSSValidator;
 class Response
 {
     /**
-     * The address of the document validated. In EARL terms, this is
-     * the TestSubject.
-     *
-     * @var string
-     */
-    public $uri;
-
-    /**
-     * Location of the service which provided the validation result. In EARL terms,
-     * this is the Assertor.
-     *
-     * @var string
-     */
-    public $checkedby;
-
-    /**
      * The CSS level (or profile) in use during the validation.
      *
      * @var string
      */
-    public $csslevel;
-
-    /**
-     * The actual date of the validation.
-     *
-     * @var string
-     */
-    public $date;
+    public $cssLevel = 'css3';
 
     /**
      * Whether or not the document validated passed or not formal validation.
      *
      * @var bool
      */
-    public $validity = false;
+    public $valid = false;
 
     /**
      * Array of Error objects (if applicable).
@@ -51,66 +28,18 @@ class Response
     /**
      * Array of Warning objects (if applicable).
      *
-     * @var Error[]
+     * @var Warning[]
      */
     public $warnings = [];
 
-    /**
-     * @return string
-     */
-    public function getCheckedby()
+    public function getCssLevel(): string
     {
-        return $this->checkedby;
+        return $this->cssLevel;
     }
 
-    /**
-     * @param string $checkedby
-     *
-     * @return Response
-     */
-    public function setCheckedby($checkedby): self
+    public function setCssLevel(string $cssLevel): self
     {
-        $this->checkedby = $checkedby;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCsslevel()
-    {
-        return $this->csslevel;
-    }
-
-    /**
-     * @param string $csslevel
-     *
-     * @return Response
-     */
-    public function setCsslevel($csslevel): self
-    {
-        $this->csslevel = $csslevel;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDate()
-    {
-        return $this->date;
-    }
-
-    /**
-     * @param string $date
-     *
-     * @return Response
-     */
-    public function setDate($date): self
-    {
-        $this->date = $date;
+        $this->cssLevel = $cssLevel;
 
         return $this;
     }
@@ -125,8 +54,6 @@ class Response
 
     /**
      * @param Error[] $errors
-     *
-     * @return Response
      */
     public function setErrors(array $errors): self
     {
@@ -135,48 +62,20 @@ class Response
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getUri()
+    public function isValid(): bool
     {
-        return $this->uri;
+        return $this->valid;
     }
 
-    /**
-     * @param string $uri
-     *
-     * @return Response
-     */
-    public function setUri($uri): self
+    public function setValid(bool $valid): self
     {
-        $this->uri = $uri;
+        $this->valid = $valid;
 
         return $this;
     }
 
     /**
-     * @return bool
-     */
-    public function isValidity()
-    {
-        return $this->validity;
-    }
-
-    /**
-     * @param bool $validity
-     *
-     * @return Response
-     */
-    public function setValidity($validity): self
-    {
-        $this->validity = $validity;
-
-        return $this;
-    }
-
-    /**
-     * @return Error[]
+     * @return Warning[]
      */
     public function getWarnings(): array
     {
@@ -184,9 +83,7 @@ class Response
     }
 
     /**
-     * @param Error[] $warnings
-     *
-     * @return Response
+     * @param Warning[] $warnings
      */
     public function setWarnings(array $warnings): self
     {
@@ -195,9 +92,6 @@ class Response
         return $this;
     }
 
-    /**
-     * @return Response
-     */
     public function addError(Error $error): self
     {
         $this->errors[] = $error;
@@ -205,9 +99,6 @@ class Response
         return $this;
     }
 
-    /**
-     * @return Response
-     */
     public function addWarning(Warning $warning): self
     {
         $this->warnings[] = $warning;

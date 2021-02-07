@@ -9,7 +9,7 @@ abstract class Message
      *
      * @var string
      */
-    protected $uri;
+    private $uri;
 
     /**
      * Line corresponding to the message.
@@ -19,89 +19,89 @@ abstract class Message
      *
      * @var int
      */
-    protected $line;
+    private $line;
 
     /**
      * The actual message.
      *
-     * @var string
+     * @var string|null
      */
-    protected $message;
+    private $message;
 
     /**
-     * @return int
+     * @var string|null
      */
-    public function getLine()
-    {
-        return $this->line;
-    }
-
-    /**
-     * @param int $line
-     *
-     * @return Message
-     */
-    public function setLine($line): self
-    {
-        $this->line = $line;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMessage()
-    {
-        return $this->message;
-    }
-
-    /**
-     * @param string $message
-     *
-     * @return Message
-     */
-    public function setMessage($message): self
-    {
-        $this->message = $message;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUri()
-    {
-        return $this->uri;
-    }
-
-    /**
-     * @param string $uri
-     *
-     * @return Message
-     */
-    public function setUri($uri): self
-    {
-        $this->uri = $uri;
-
-        return $this;
-    }
+    private $type;
 
     /**
      * Constructor for a response message.
      *
      * @param \DOMElement $node a dom document node
      */
-    public function __construct(\DOMElement $node = null)
+    public function __construct(\DOMElement $node)
     {
-        if ($node) {
-            foreach (\get_class_vars(__CLASS__) as $var => $val) {
-                $element = $node->getElementsByTagName($var);
-                if ($element->length) {
-                    $this->{'set'.\ucfirst($var)}($element->item(0)->nodeValue);
-                }
-            }
+        $uriElement = $node->parentNode->getElementsByTagName('uri');
+        $this->setUri($uriElement->item(0)->nodeValue);
+
+        $lineElement = $node->getElementsByTagName('line');
+        $this->setLine($lineElement->item(0)->nodeValue);
+
+        $typeElement = $node->getElementsByTagName('type');
+        if ($typeElement->length) {
+            $this->setType($typeElement->item(0)->nodeValue);
         }
+
+        $messageElement = $node->getElementsByTagName('message');
+        if ($messageElement->length) {
+            $this->setMessage(\trim($messageElement->item(0)->nodeValue));
+        }
+    }
+
+    public function getLine(): int
+    {
+        return $this->line;
+    }
+
+    public function setLine(int $line): self
+    {
+        $this->line = $line;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getMessage(): ?string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(?string $message): self
+    {
+        $this->message = $message;
+
+        return $this;
+    }
+
+    public function getUri(): string
+    {
+        return $this->uri;
+    }
+
+    public function setUri(string $uri): self
+    {
+        $this->uri = $uri;
+
+        return $this;
     }
 }

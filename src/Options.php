@@ -5,16 +5,6 @@ namespace CSSValidator;
 class Options
 {
     /**
-     * Output format
-     *          Triggers the various outputs formats of the validator. If unset,
-     *          the usual Web html format will be sent. If set to soap12,
-     *          the SOAP1.2 interface will be triggered.
-     *
-     * @var string
-     */
-    protected $output = 'soap12';
-
-    /**
      * Warning level
      *           Default value is '1', and value could one of these :
      *           <ul>
@@ -26,7 +16,7 @@ class Options
      *
      * @var string
      */
-    protected $warning = '1';
+    private $warning = '1';
 
     /**
      * Profile
@@ -47,7 +37,7 @@ class Options
      *
      * @var string
      */
-    protected $profile = 'css21';
+    private $profile = 'css3';
 
     /**
      * User medium
@@ -68,7 +58,7 @@ class Options
      *
      * @var string
      */
-    protected $usermedium = 'all';
+    private $userMedium = 'all';
 
     /**
      * Language used for response messages
@@ -77,102 +67,50 @@ class Options
      *
      * @var string
      */
-    protected $lang = 'en';
+    private $lang = 'en';
 
-    /**
-     * @return string
-     */
-    public function getLang()
+    public function getLang(): string
     {
         return $this->lang;
     }
 
-    /**
-     * @param string $lang
-     *
-     * @return Options
-     */
-    public function setLang($lang): self
+    public function setLang(string $lang): self
     {
         $this->lang = $lang;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getOutput()
-    {
-        return $this->output;
-    }
-
-    /**
-     * @param string $output
-     *
-     * @return Options
-     */
-    public function setOutput($output): self
-    {
-        $this->output = $output;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getProfile()
+    public function getProfile(): string
     {
         return $this->profile;
     }
 
-    /**
-     * @param string $profile
-     *
-     * @return Options
-     */
-    public function setProfile($profile): self
+    public function setProfile(string $profile): self
     {
         $this->profile = $profile;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getUsermedium()
+    public function getUserMedium(): string
     {
-        return $this->usermedium;
+        return $this->userMedium;
     }
 
-    /**
-     * @param string $usermedium
-     *
-     * @return Options
-     */
-    public function setUsermedium($usermedium): self
+    public function setUserMedium($userMedium): self
     {
-        $this->usermedium = $usermedium;
+        $this->userMedium = $userMedium;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getWarning()
+    public function getWarning(): string
     {
         return $this->warning;
     }
 
-    /**
-     * @param string $warning
-     *
-     * @return Options
-     */
-    public function setWarning($warning): self
+    public function setWarning(string $warning): self
     {
         $this->warning = $warning;
 
@@ -182,10 +120,9 @@ class Options
     public function buildOptions(): array
     {
         return [
-            'output' => $this->getOutput(),
             'profile' => $this->getProfile(),
             'warning' => $this->getWarning(),
-            'usermedium' => $this->getUsermedium(),
+            'usermedium' => $this->getUserMedium(),
             'lang' => $this->getLang(),
         ];
     }
