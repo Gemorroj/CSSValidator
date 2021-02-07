@@ -10,9 +10,9 @@ class CSSValidatorTest extends TestCase
     public function testCssUri(): void
     {
         $validator = new CSSValidator();
-        $result = $validator->validateUri('https://raw.githubusercontent.com/Gemorroj/CSSValidator/master/tests/fixtures/valid.css');
+        $result = $validator->validateUri('http://jigsaw.w3.org/css-validator/style/base.css');
         self::assertEmpty($result->getErrors());
-        self::assertEmpty($result->getWarnings());
+        self::assertNotEmpty($result->getWarnings());
     }
 
     public function testHtmlUri(): void
