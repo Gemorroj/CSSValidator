@@ -16,6 +16,23 @@ class Options
     public const PROFILE_ATSC_TV = 'atsc-tv';
     public const PROFILE_TV = 'tv';
 
+    public const USER_MEDIUM_ALL = 'all';
+    public const USER_MEDIUM_AURAL = 'aural';
+    public const USER_MEDIUM_BRAILLE = 'braille';
+    public const USER_MEDIUM_EMBOSSED = 'embossed';
+    public const USER_MEDIUM_HANDHELD = 'handheld';
+    public const USER_MEDIUM_PRINT = 'print';
+    public const USER_MEDIUM_PROJECTION = 'projection';
+    public const USER_MEDIUM_SCREEN = 'screen';
+    public const USER_MEDIUM_TTY = 'tty';
+    public const USER_MEDIUM_TV = 'tv';
+    public const USER_MEDIUM_PRESENTATION = 'presentation';
+
+    public const WARNING_ALL = '2';
+    public const WARNING_NORMAL = '1';
+    public const WARNING_IMPORTANT = '0';
+    public const WARNING_NONE = 'no';
+
     /**
      * Warning level
      *           Default value is '1', and value could one of these :
@@ -28,7 +45,7 @@ class Options
      *
      * @var string
      */
-    private $warning = '1';
+    private $warning = self::WARNING_NORMAL;
 
     /**
      * Profile
@@ -70,7 +87,7 @@ class Options
      *
      * @var string
      */
-    private $userMedium = 'all';
+    private $userMedium = self::USER_MEDIUM_ALL;
 
     /**
      * Language used for response messages
