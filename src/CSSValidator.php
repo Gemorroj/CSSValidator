@@ -3,6 +3,7 @@
 namespace CSSValidator;
 
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpClient\RetryableHttpClient;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -41,6 +42,9 @@ class CSSValidator
                     'User-Agent' => 'gemorroj/cssvalidator',
                 ],
             ]);
+
+            // https://symfony.com/doc/current/http_client.html#retry-failed-requests
+            $httpClient = new RetryableHttpClient($httpClient);
         }
         $this->setHttpClient($httpClient);
     }

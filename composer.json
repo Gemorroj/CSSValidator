@@ -7,7 +7,7 @@
         "php": ">=7.3",
         "ext-dom": "*",
         "ext-libxml": "*",
-        "symfony/http-client": "^4.4.11|^5.0"
+        "symfony/http-client": "^5.2"
     },
     "authors": [
         {
