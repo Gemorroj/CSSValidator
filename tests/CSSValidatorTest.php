@@ -22,7 +22,6 @@ class CSSValidatorTest extends TestCase
     {
         $validator = new CSSValidator();
         $result = $validator->validateUri('http://example.com');
-        \var_dump($result);
         self::assertEmpty($result->getErrors());
         self::assertNotEmpty($result->getWarnings());
         self::assertTrue($result->isValid());
