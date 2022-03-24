@@ -11,7 +11,7 @@ class CSSValidatorTest extends TestCase
     public function testCssUri(): void
     {
         $validator = new CSSValidator();
-        $result = $validator->validateUri('https://raw.githubusercontent.com/Gemorroj/CSSValidator/master/tests/fixtures/warnings.css');
+        $result = $validator->validateUri('https://rawcdn.githack.com/Gemorroj/CSSValidator/1f68c8c32afb032ff936e7a53c9e1ea37a8cd50d/tests/fixtures/warnings.css');
         self::assertEmpty($result->getErrors());
         self::assertNotEmpty($result->getWarnings());
         self::assertTrue($result->isValid());
