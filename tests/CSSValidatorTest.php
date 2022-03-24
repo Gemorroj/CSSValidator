@@ -11,7 +11,7 @@ class CSSValidatorTest extends TestCase
     public function testCssUri(): void
     {
         $validator = new CSSValidator();
-        $result = $validator->validateUri('http://jigsaw.w3.org/css-validator/style/base.css');
+        $result = $validator->validateUri('https://raw.githubusercontent.com/Gemorroj/CSSValidator/master/tests/fixtures/warnings.css');
         self::assertEmpty($result->getErrors());
         self::assertNotEmpty($result->getWarnings());
         self::assertTrue($result->isValid());
@@ -22,6 +22,7 @@ class CSSValidatorTest extends TestCase
     {
         $validator = new CSSValidator();
         $result = $validator->validateUri('http://example.com');
+        \var_dump($result);
         self::assertEmpty($result->getErrors());
         self::assertNotEmpty($result->getWarnings());
         self::assertTrue($result->isValid());
@@ -64,7 +65,7 @@ class CSSValidatorTest extends TestCase
         $error1 = $result->getErrors()[0];
 
         self::assertSame('parse-error', $error1->getErrorType());
-        self::assertSame('#error-css-test', $error1->getContext());
+        self::assertNull($error1->getContext());
         self::assertSame('unrecognized', $error1->getErrorSubType());
         self::assertSame('error-css-test!!!ing {%&kground: green;', $error1->getSkippedString());
         self::assertSame('file://localhost/TextArea', $error1->getUri());
@@ -75,7 +76,7 @@ class CSSValidatorTest extends TestCase
         $error2 = $result->getErrors()[1];
 
         self::assertSame('parse-error', $error2->getErrorType());
-        self::assertSame('#error-css-test', $error2->getContext());
+        self::assertNull($error2->getContext());
         self::assertSame('skippedString', $error2->getErrorSubType());
         self::assertSame('}', $error2->getSkippedString());
         self::assertSame('file://localhost/TextArea', $error2->getUri());
