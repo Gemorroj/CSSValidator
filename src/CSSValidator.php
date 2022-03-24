@@ -19,7 +19,7 @@ class CSSValidator
      *
      * @var string
      */
-    private $validatorUri = 'http://jigsaw.w3.org/css-validator/validator';
+    private $validatorUri = 'https://jigsaw.w3.org/css-validator/validator';
 
     /**
      * Options.
