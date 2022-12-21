@@ -4,20 +4,14 @@ namespace CSSValidator;
 
 class Warning extends Message
 {
-    /**
-     * @var int
-     */
-    private $level;
+    private int $level;
 
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(\DOMElement $node)
     {
         parent::__construct($node);
 
-        $levelElement = $node->getElementsByTagName('level');
-        $this->setLevel($levelElement->item(0)->nodeValue);
+        $levelElements = $node->getElementsByTagName('level');
+        $this->level = $levelElements->item(0)->nodeValue;
     }
 
     public function getLevel(): int

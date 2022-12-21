@@ -42,10 +42,8 @@ class Options
      *             <li>0</li> most important warning messages
      *             <li>no</li> none messages
      *           </ul>.
-     *
-     * @var string
      */
-    private $warning = self::WARNING_NORMAL;
+    private string $warning = self::WARNING_NORMAL;
 
     /**
      * Profile
@@ -63,10 +61,8 @@ class Options
      *             <li>atsc-tv</li> ATSC TV
      *             <li>tv</li> TV
      *           </ul>.
-     *
-     * @var string
      */
-    private $profile = self::PROFILE_CSS3;
+    private string $profile = self::PROFILE_CSS3;
 
     /**
      * User medium
@@ -84,19 +80,15 @@ class Options
      *                <li>tv</li>
      *                <li>presentation</li>
      *              </ul>.
-     *
-     * @var string
      */
-    private $userMedium = self::USER_MEDIUM_ALL;
+    private string $userMedium = self::USER_MEDIUM_ALL;
 
     /**
      * Language used for response messages
-     *        Default value is 'en', and value could one of these :
+     *        Default value is 'en', and value could one of these:
      *        en, fr, ja, es, zh-cn, nl, de.
-     *
-     * @var string
      */
-    private $lang = 'en';
+    private string $lang = 'en';
 
     public function getLang(): string
     {
@@ -146,6 +138,9 @@ class Options
         return $this;
     }
 
+    /**
+     * @return array{string, string}
+     */
     public function buildOptions(): array
     {
         return [

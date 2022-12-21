@@ -6,32 +6,23 @@ abstract class Message
 {
     /**
      * The address of the document trying to validate.
-     *
-     * @var string
      */
-    private $uri;
+    private string $uri;
 
     /**
      * Line corresponding to the message.
      *
      * Within the source code of the validated document, refers to the line
      * where the error was detected.
-     *
-     * @var int
      */
-    private $line;
+    private int $line;
 
     /**
      * The actual message.
-     *
-     * @var string|null
      */
-    private $message;
+    private ?string $message = null;
 
-    /**
-     * @var string|null
-     */
-    private $type;
+    private ?string $type = null;
 
     /**
      * Constructor for a response message.
@@ -40,20 +31,20 @@ abstract class Message
      */
     public function __construct(\DOMElement $node)
     {
-        $uriElement = $node->parentNode->getElementsByTagName('uri');
-        $this->setUri($uriElement->item(0)->nodeValue);
+        $uriElements = $node->parentNode->getElementsByTagName('uri');
+        $this->uri = $uriElements->item(0)->nodeValue;
 
-        $lineElement = $node->getElementsByTagName('line');
-        $this->setLine($lineElement->item(0)->nodeValue);
+        $lineElements = $node->getElementsByTagName('line');
+        $this->line = $lineElements->item(0)->nodeValue;
 
-        $typeElement = $node->getElementsByTagName('type');
-        if ($typeElement->length) {
-            $this->setType($typeElement->item(0)->nodeValue);
+        $typeElements = $node->getElementsByTagName('type');
+        if ($typeElements->length) {
+            $this->type = $typeElements->item(0)->nodeValue;
         }
 
-        $messageElement = $node->getElementsByTagName('message');
-        if ($messageElement->length) {
-            $this->setMessage(\trim($messageElement->item(0)->nodeValue));
+        $messageElements = $node->getElementsByTagName('message');
+        if ($messageElements->length) {
+            $this->message = \trim($messageElements->item(0)->nodeValue);
         }
     }
 

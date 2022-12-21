@@ -6,31 +6,27 @@ class Response
 {
     /**
      * The CSS level (or profile) in use during the validation.
-     *
-     * @var string
      */
-    public $cssLevel = Options::PROFILE_CSS3;
+    public string $cssLevel = Options::PROFILE_CSS3;
 
     /**
      * Whether or not the document validated passed or not formal validation.
-     *
-     * @var bool
      */
-    public $valid = false;
+    public bool $valid = false;
 
     /**
      * Array of Error objects (if applicable).
      *
      * @var Error[]
      */
-    public $errors = [];
+    public array $errors = [];
 
     /**
      * Array of Warning objects (if applicable).
      *
      * @var Warning[]
      */
-    public $warnings = [];
+    public array $warnings = [];
 
     public function getCssLevel(): string
     {

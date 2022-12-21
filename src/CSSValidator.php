@@ -16,26 +16,15 @@ class CSSValidator
      * URI to the W3C validator.
      *
      * @see https://github.com/w3c/css-validator
-     *
-     * @var string
      */
-    private $validatorUri = 'https://jigsaw.w3.org/css-validator/validator';
+    private string $validatorUri = 'https://jigsaw.w3.org/css-validator/validator';
 
-    /**
-     * Options.
-     *
-     * @var Options
-     */
-    private $options;
-
-    /**
-     * @var HttpClientInterface
-     */
-    private $httpClient;
+    private Options $options;
+    private HttpClientInterface $httpClient;
 
     public function __construct(Options $options = null, HttpClientInterface $httpClient = null)
     {
-        $this->setOptions($options ?: new Options());
+        $this->options = $options ?: new Options();
         if (!$httpClient) {
             $httpClient = HttpClient::createForBaseUri($this->getValidatorUri(), [
                 'headers' => [
@@ -46,7 +35,7 @@ class CSSValidator
             // https://symfony.com/doc/current/http_client.html#retry-failed-requests
             $httpClient = new RetryableHttpClient($httpClient);
         }
-        $this->setHttpClient($httpClient);
+        $this->httpClient = $httpClient;
     }
 
     public function getOptions(): Options

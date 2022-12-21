@@ -6,51 +6,38 @@ class Error extends Message
 {
     /**
      * Category of error raised.
-     *
-     * @var string
      */
-    private $errorType;
+    private string $errorType;
 
     /**
      * Context where error was occurred.
-     *
-     * @var string|null
      */
-    private $context;
+    private ?string $context = null;
 
-    /**
-     * @var string|null
-     */
-    private $errorSubType;
+    private ?string $errorSubType = null;
 
-    /**
-     * @var string|null
-     */
-    private $skippedString;
+    private ?string $skippedString = null;
 
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(\DOMElement $node)
     {
         parent::__construct($node);
 
-        $errorTypeElement = $node->getElementsByTagName('errortype');
-        $this->setErrorType($errorTypeElement->item(0)->nodeValue);
+        $errorTypeElements = $node->getElementsByTagName('errortype');
+        $this->errorType = $errorTypeElements->item(0)->nodeValue;
 
-        $contextElement = $node->getElementsByTagName('context');
-        if ($contextElement->length) {
-            $this->setContext($contextElement->item(0)->nodeValue);
+        $contextElements = $node->getElementsByTagName('context');
+        if ($contextElements->length) {
+            $this->context = $contextElements->item(0)->nodeValue;
         }
 
-        $errorSubTypeElement = $node->getElementsByTagName('errorsubtype');
-        if ($errorSubTypeElement->length) {
-            $this->setErrorSubType(\trim($errorSubTypeElement->item(0)->nodeValue));
+        $errorSubTypeElements = $node->getElementsByTagName('errorsubtype');
+        if ($errorSubTypeElements->length) {
+            $this->errorSubType = \trim($errorSubTypeElements->item(0)->nodeValue);
         }
 
-        $skippedStringElement = $node->getElementsByTagName('skippedstring');
-        if ($skippedStringElement->length) {
-            $this->setSkippedString(\trim($skippedStringElement->item(0)->nodeValue));
+        $skippedStringElements = $node->getElementsByTagName('skippedstring');
+        if ($skippedStringElements->length) {
+            $this->skippedString = \trim($skippedStringElements->item(0)->nodeValue);
         }
     }
 
