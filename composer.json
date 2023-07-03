@@ -4,10 +4,10 @@
     "description": "W3C CSS Validator service.",
     "license": "LGPL-3.0-or-later",
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "ext-dom": "*",
         "ext-libxml": "*",
-        "symfony/http-client": "^5.2||^6.0"
+        "symfony/http-client": "^5.4||^6.0"
     },
     "authors": [
         {
@@ -15,7 +15,7 @@
         }
     ],
     "require-dev": {
-        "phpunit/phpunit": "^9.5.16",
+        "phpunit/phpunit": "^9.6",
         "friendsofphp/php-cs-fixer": "^3.0"
     },
     "autoload": {
