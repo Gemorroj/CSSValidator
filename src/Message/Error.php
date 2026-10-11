@@ -1,6 +1,6 @@
 <?php
 
-namespace CSSValidator;
+namespace CSSValidator\Message;
 
 class Error extends Message
 {
@@ -22,23 +22,10 @@ class Error extends Message
     {
         parent::__construct($node);
 
-        $errorTypeElements = $node->getElementsByTagName('errortype');
-        $this->errorType = $errorTypeElements->item(0)->nodeValue;
-
-        $contextElements = $node->getElementsByTagName('context');
-        if ($contextElements->length) {
-            $this->context = $contextElements->item(0)->nodeValue;
-        }
-
-        $errorSubTypeElements = $node->getElementsByTagName('errorsubtype');
-        if ($errorSubTypeElements->length) {
-            $this->errorSubType = \trim($errorSubTypeElements->item(0)->nodeValue);
-        }
-
-        $skippedStringElements = $node->getElementsByTagName('skippedstring');
-        if ($skippedStringElements->length) {
-            $this->skippedString = \trim($skippedStringElements->item(0)->nodeValue);
-        }
+        $this->errorType = self::firstValue($node, 'errortype') ?? '';
+        $this->context = self::firstValue($node, 'context');
+        $this->errorSubType = self::firstValue($node, 'errorsubtype');
+        $this->skippedString = self::firstValue($node, 'skippedstring');
     }
 
     public function getSkippedString(): ?string

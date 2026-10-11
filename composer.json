@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "CSSValidator\\": "src"
+            "CSSValidator\\": "src/"
         }
     },
     "autoload-dev": {

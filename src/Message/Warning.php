@@ -1,6 +1,6 @@
 <?php
 
-namespace CSSValidator;
+namespace CSSValidator\Message;
 
 class Warning extends Message
 {
@@ -10,8 +10,7 @@ class Warning extends Message
     {
         parent::__construct($node);
 
-        $levelElements = $node->getElementsByTagName('level');
-        $this->level = $levelElements->item(0)->nodeValue;
+        $this->level = (int) (self::firstValue($node, 'level') ?? 0);
     }
 
     public function getLevel(): int

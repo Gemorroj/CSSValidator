@@ -16,8 +16,18 @@ composer require gemorroj/cssvalidator
 ```php
 <?php
 use CSSValidator\CSSValidator;
+use CSSValidator\Options\Options;
+use CSSValidator\Options\ProfileType;
+use CSSValidator\Options\UserMediumType;
+use CSSValidator\Options\WarningType;
 
-$validator = new CSSValidator();
+$options = (new Options())
+    ->setProfile(ProfileType::Css21) // or a string, e.g. 'css21'
+    ->setWarning(WarningType::All)
+    ->setUserMedium(UserMediumType::Screen)
+    ->setLang('en');
+
+$validator = new CSSValidator($options);
 $result = $validator->validateFragment('#css-code { background: green; }');
 $result = $validator->validateFile('/path/to/file.css');
 $result = $validator->validateUri('http://example.com/style.css');

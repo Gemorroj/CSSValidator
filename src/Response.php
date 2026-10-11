@@ -2,31 +2,35 @@
 
 namespace CSSValidator;
 
+use CSSValidator\Message\Error;
+use CSSValidator\Message\Warning;
+use CSSValidator\Options\ProfileType;
+
 class Response
 {
     /**
      * The CSS level (or profile) in use during the validation.
      */
-    public string $cssLevel = Options::PROFILE_CSS3;
+    private string $cssLevel = ProfileType::Css3->value;
 
     /**
      * Whether or not the document validated passed or not formal validation.
      */
-    public bool $valid = false;
+    private bool $valid = false;
 
     /**
      * Array of Error objects (if applicable).
      *
      * @var Error[]
      */
-    public array $errors = [];
+    private array $errors = [];
 
     /**
      * Array of Warning objects (if applicable).
      *
      * @var Warning[]
      */
-    public array $warnings = [];
+    private array $warnings = [];
 
     public function getCssLevel(): string
     {

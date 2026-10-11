@@ -1,6 +1,6 @@
 <?php
 
-namespace CSSValidator;
+namespace CSSValidator\Message;
 
 abstract class Message
 {
@@ -31,21 +31,10 @@ abstract class Message
      */
     public function __construct(\DOMElement $node)
     {
-        $uriElements = $node->parentNode->getElementsByTagName('uri');
-        $this->uri = $uriElements->item(0)->nodeValue;
-
-        $lineElements = $node->getElementsByTagName('line');
-        $this->line = $lineElements->item(0)->nodeValue;
-
-        $typeElements = $node->getElementsByTagName('type');
-        if ($typeElements->length) {
-            $this->type = $typeElements->item(0)->nodeValue;
-        }
-
-        $messageElements = $node->getElementsByTagName('message');
-        if ($messageElements->length) {
-            $this->message = \trim($messageElements->item(0)->nodeValue);
-        }
+        $this->uri = self::firstValue($node->parentNode, 'uri') ?? '';
+        $this->line = (int) (self::firstValue($node, 'line') ?? 0);
+        $this->type = self::firstValue($node, 'type');
+        $this->message = self::firstValue($node, 'message');
     }
 
     public function getLine(): int
@@ -94,5 +83,19 @@ abstract class Message
         $this->uri = $uri;
 
         return $this;
+    }
+
+    /**
+     * Return the trimmed value of the first child element with the given name, if any.
+     */
+    protected static function firstValue(?\DOMNode $context, string $tagName): ?string
+    {
+        if (!$context instanceof \DOMElement && !$context instanceof \DOMDocument) {
+            return null;
+        }
+
+        $value = $context->getElementsByTagName($tagName)->item(0)?->nodeValue;
+
+        return null !== $value ? \trim($value) : null;
     }
 }

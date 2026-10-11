@@ -2,8 +2,10 @@
 
 namespace CSSValidator;
 
+use CSSValidator\Message\Error;
+use CSSValidator\Message\Warning;
+use CSSValidator\Options\Options;
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\HttpClient\RetryableHttpClient;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -17,25 +19,19 @@ class CSSValidator
      *
      * @see https://github.com/w3c/css-validator
      */
-    private string $validatorUri = 'https://jigsaw.w3.org/css-validator/validator';
+    private string $validatorUri;
 
     private Options $options;
     private HttpClientInterface $httpClient;
 
-    public function __construct(?Options $options = null, ?HttpClientInterface $httpClient = null)
-    {
-        $this->options = $options ?: new Options();
-        if (!$httpClient) {
-            $httpClient = HttpClient::createForBaseUri($this->getValidatorUri(), [
-                'headers' => [
-                    'User-Agent' => 'gemorroj/cssvalidator',
-                ],
-            ]);
-
-            // https://symfony.com/doc/current/http_client.html#retry-failed-requests
-            $httpClient = new RetryableHttpClient($httpClient);
-        }
-        $this->httpClient = $httpClient;
+    public function __construct(
+        ?Options $options = null,
+        ?HttpClientInterface $httpClient = null,
+        string $validatorUri = 'https://jigsaw.w3.org/css-validator/validator',
+    ) {
+        $this->options = $options ?? new Options();
+        $this->httpClient = $httpClient ?? HttpClient::create();
+        $this->validatorUri = $validatorUri;
     }
 
     public function getOptions(): Options
@@ -43,35 +39,14 @@ class CSSValidator
         return $this->options;
     }
 
-    public function setOptions(Options $options): self
-    {
-        $this->options = $options;
-
-        return $this;
-    }
-
-    public function getValidatorUri(): string
-    {
-        return $this->validatorUri;
-    }
-
-    public function setValidatorUri(string $validatorUri): self
-    {
-        $this->validatorUri = $validatorUri;
-
-        return $this;
-    }
-
     public function getHttpClient(): HttpClientInterface
     {
         return $this->httpClient;
     }
 
-    public function setHttpClient(HttpClientInterface $httpClient): self
+    public function getValidatorUri(): string
     {
-        $this->httpClient = $httpClient;
-
-        return $this;
+        return $this->validatorUri;
     }
 
     /**
@@ -84,75 +59,119 @@ class CSSValidator
      *
      * @throws Exception
      * @throws TransportExceptionInterface   When a network error occurs
-     * @throws RedirectionExceptionInterface On a 3xx when $throw is true and the "max_redirects" option has been reached
-     * @throws ClientExceptionInterface      On a 4xx when $throw is true
-     * @throws ServerExceptionInterface      On a 5xx when $throw is true
+     * @throws RedirectionExceptionInterface On a 3xx when the "max_redirects" option has been reached
+     * @throws ClientExceptionInterface      On a 4xx
+     * @throws ServerExceptionInterface      On a 5xx
      */
     public function validateUri(string $uri): Response
     {
-        $response = $this->getHttpClient()->request('GET', '', [
-            'query' => \array_merge(
-                $this->getOptions()->buildOptions(),
-                ['uri' => $uri, 'output' => 'soap12']
-            ),
-        ]);
-
-        return $this->parseSOAP12Response($response->getContent());
+        return $this->request('GET', \array_merge($this->buildQuery(), ['uri' => $uri]));
     }
 
     /**
      * Validates the local file.
      *
      * Requests validation on the local file, from an instance of the W3C validator.
-     * The file is posted to the W3C validator using multipart/form-data.
      *
      * @param string $file file to be validated
      *
      * @throws Exception
      * @throws TransportExceptionInterface   When a network error occurs
-     * @throws RedirectionExceptionInterface On a 3xx when $throw is true and the "max_redirects" option has been reached
-     * @throws ClientExceptionInterface      On a 4xx when $throw is true
-     * @throws ServerExceptionInterface      On a 5xx when $throw is true
+     * @throws RedirectionExceptionInterface On a 3xx when the "max_redirects" option has been reached
+     * @throws ClientExceptionInterface      On a 4xx
+     * @throws ServerExceptionInterface      On a 5xx
      */
     public function validateFile(string $file): Response
     {
-        if (!\file_exists($file)) {
-            throw new Exception('File not found');
-        }
-        if (!\is_readable($file)) {
-            throw new Exception('File not readable');
+        $f = @\fopen($file, 'r');
+        if (false === $f) {
+            throw new Exception(\error_get_last()['message'] ?? \sprintf('Unable to open file "%s".', $file));
         }
 
-        $data = @\file_get_contents($file);
-        if (false === $data) {
-            throw new Exception(\error_get_last()['message']);
+        try {
+            $css = \stream_get_contents($f);
+        } finally {
+            \fclose($f);
         }
 
-        return $this->validateFragment($data);
+        if (false === $css) {
+            throw new Exception(\sprintf('Unable to read file "%s".', $file));
+        }
+
+        return $this->validateFragment($css);
     }
 
     /**
-     * Validate an html string.
+     * Validate a css string.
      *
      * @param string $css Full css document fragment
      *
      * @throws Exception
      * @throws TransportExceptionInterface   When a network error occurs
-     * @throws RedirectionExceptionInterface On a 3xx when $throw is true and the "max_redirects" option has been reached
-     * @throws ClientExceptionInterface      On a 4xx when $throw is true
-     * @throws ServerExceptionInterface      On a 5xx when $throw is true
+     * @throws RedirectionExceptionInterface On a 3xx when the "max_redirects" option has been reached
+     * @throws ClientExceptionInterface      On a 4xx
+     * @throws ServerExceptionInterface      On a 5xx
      */
     public function validateFragment(string $css): Response
     {
-        $response = $this->getHttpClient()->request('GET', '', [
-            'body' => $css,
-            'query' => \array_merge(
-                $this->getOptions()->buildOptions(),
-                ['text' => $css, 'output' => 'soap12']
-            ),
-        ]);
+        return $this->request('POST', \array_merge($this->buildQuery(), ['text' => $css]));
+    }
 
-        return $this->parseSOAP12Response($response->getContent());
+    /**
+     * Send a request to the validator and parse its SOAP12 response.
+     *
+     * The validator reads the parameters from the query string on GET and from a
+     * multipart/form-data body on POST, so they cannot be mixed between the two.
+     *
+     * @param array<string, string> $params
+     *
+     * @throws Exception
+     * @throws TransportExceptionInterface   When a network error occurs
+     * @throws RedirectionExceptionInterface On a 3xx when the "max_redirects" option has been reached
+     * @throws ClientExceptionInterface      On a 4xx
+     * @throws ServerExceptionInterface      On a 5xx
+     */
+    private function request(string $method, array $params): Response
+    {
+        $options = [
+            'headers' => [
+                'User-Agent' => 'gemorroj/cssvalidator',
+            ],
+        ];
+        if ('GET' === $method) {
+            $options['query'] = $params;
+        } else {
+            $options['headers']['Content-Type'] = 'multipart/form-data';
+            $options['body'] = $params;
+        }
+
+        $response = $this->getHttpClient()->request($method, $this->getValidatorUri(), $options);
+
+        try {
+            $content = $response->getContent();
+        } catch (ClientExceptionInterface|ServerExceptionInterface $e) {
+            $fault = self::extractFaultMessage($e->getResponse()->getContent(false));
+            if (null !== $fault) {
+                throw new Exception($fault, 0, $e);
+            }
+
+            throw $e;
+        }
+
+        return $this->parseSOAP12Response($content);
+    }
+
+    /**
+     * Build the common query string arguments for the validator.
+     *
+     * @return array<string, string>
+     */
+    private function buildQuery(): array
+    {
+        return \array_merge(
+            $this->getOptions()->buildOptions(),
+            ['output' => 'soap12']
+        );
     }
 
     /**
@@ -166,30 +185,76 @@ class CSSValidator
      */
     protected function parseSOAP12Response(string $xml): Response
     {
+        $doc = self::loadXml($xml);
+
+        $fault = self::faultMessage($doc);
+        if (null !== $fault) {
+            throw new Exception($fault);
+        }
+
+        $response = new Response();
+
+        $cssLevel = $doc->getElementsByTagName('csslevel')->item(0);
+        if (null !== $cssLevel) {
+            $response->setCssLevel($cssLevel->nodeValue);
+        }
+
+        $validity = $doc->getElementsByTagName('validity')->item(0);
+        if (null !== $validity) {
+            $response->setValid('true' === $validity->nodeValue);
+        }
+
+        foreach ($doc->getElementsByTagName('error') as $error) {
+            $response->addError(new Error($error));
+        }
+
+        foreach ($doc->getElementsByTagName('warning') as $warning) {
+            $response->addWarning(new Warning($warning));
+        }
+
+        return $response;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private static function loadXml(string $xml): \DOMDocument
+    {
         $doc = new \DOMDocument('1.0', 'UTF-8');
 
         if (false === @$doc->loadXML($xml, \LIBXML_COMPACT | \LIBXML_NONET)) {
             throw new Exception('Failed load xml');
         }
 
-        $response = new Response();
+        return $doc;
+    }
 
-        $cssLevelElement = $doc->getElementsByTagName('csslevel');
-        $response->setCssLevel($cssLevelElement->item(0)->nodeValue);
-
-        $element = $doc->getElementsByTagName('validity');
-        $response->setValid('true' === $element->item(0)->nodeValue);
-
-        $errors = $doc->getElementsByTagName('error');
-        foreach ($errors as $error) {
-            $response->addError(new Error($error));
+    /**
+     * Return the SOAP fault reason, or null when the document is not a fault.
+     */
+    private static function faultMessage(\DOMDocument $doc): ?string
+    {
+        $fault = $doc->getElementsByTagName('Fault')->item(0);
+        if (null === $fault) {
+            return null;
         }
 
-        $warnings = $doc->getElementsByTagName('warning');
-        foreach ($warnings as $warning) {
-            $response->addWarning(new Warning($warning));
+        $reason = $fault->getElementsByTagName('Text')->item(0);
+
+        return null !== $reason ? \trim($reason->nodeValue) : 'The validator reported a SOAP fault.';
+    }
+
+    /**
+     * @return string|null the SOAP fault reason, or null when the body is not a parseable fault
+     */
+    private static function extractFaultMessage(string $xml): ?string
+    {
+        $doc = new \DOMDocument('1.0', 'UTF-8');
+
+        if (false === @$doc->loadXML($xml, \LIBXML_COMPACT | \LIBXML_NONET)) {
+            return null;
         }
 
-        return $response;
+        return self::faultMessage($doc);
     }
 }
