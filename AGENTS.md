@@ -1,23 +1,26 @@
 # AGENTS.md
 
-## Project
-PHP library — client for the W3C CSS Validator service.
-PSR-4: `CSSValidator\` -> `src/`.
+Small PHP library (`gemorroj/cssvalidator`) — a client for the W3C CSS Validator API.
 
-## Requirements
-- PHP >= 8.2 with `ext-dom`, `ext-libxml`
+## Stack
 
-## Structure
-- `src/` — library code
-- `tests/` — PHPUnit tests and fixtures
+- PHP >= 8.2 with `ext-dom`, `ext-libxml`, PSR-4 (`CSSValidator\` -> `src/`)
+- Runtime dependency: Symfony HttpClient
+- Dev tools: PHPUnit, PHP-CS-Fixer
 
 ## Commands
-- `composer install` — install dependencies
-- `vendor/bin/phpunit` — run tests (requires network access to W3C validator)
-- `vendor/bin/php-cs-fixer fix --dry-run --diff` — check code style
-- `vendor/bin/php-cs-fixer fix` — apply code style fixes
 
-## Notes
-- Code style is defined in `.php-cs-fixer.dist.php`.
-- Keep changes minimal and follow existing code style.
-- Do not commit unless explicitly asked.
+```bash
+composer install
+vendor/bin/phpunit
+vendor/bin/php-cs-fixer fix --dry-run --diff
+vendor/bin/php-cs-fixer fix
+```
+
+## Conventions
+
+- Explore `src/` and `tests/` to learn the structure and style; follow the existing PHP-CS-Fixer config.
+- Keep changes minimal and focused; do not add new dependencies without need.
+- Keep public API backward compatible; update `README.md` examples if behavior changes.
+- Add or update PHPUnit tests for bug fixes and new features.
+- Do not commit `vendor/`, `.phpunit.result.cache`, or `.php-cs-fixer.cache`.
