@@ -24,3 +24,4 @@ vendor/bin/php-cs-fixer fix
 - Keep public API backward compatible; update `README.md` examples if behavior changes.
 - Add or update PHPUnit tests for bug fixes and new features.
 - Do not commit `vendor/`, `.phpunit.result.cache`, or `.php-cs-fixer.cache`.
+- Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/).
